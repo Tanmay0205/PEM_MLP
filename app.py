@@ -146,7 +146,7 @@ PLOTLY_TEMPLATE = dict(
         font=dict(color='#ccc', family='Space Mono, monospace', size=11),
         xaxis=dict(gridcolor='#2a2d3a', linecolor='#333'),
         yaxis=dict(gridcolor='#2a2d3a', linecolor='#333'),
-        title=dict(font=dict(color='#FFD700', size=14)),
+        title_font=dict(color='#FFD700', size=14),
     )
 )
 GOLD, SILVER, TEAL, CORAL = '#FFD700', '#C0C0C0', '#00CED1', '#FF6B6B'
