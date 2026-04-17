@@ -356,9 +356,10 @@ if page == "🏠 Dashboard":
 
         with st.expander("📌 View Ideal Conditions Table"):
             if 'top_feats' in arts:
+                display_feats = [f for f in arts['top_feats'][:20] if f != 'month']
                 ideal_table = pd.DataFrame({
-                    'Feature': arts['top_feats'][:20],
-                    'Ideal Value': [round(arts['ideal'].get(f, 0), 4) for f in arts['top_feats'][:20]]
+                    'Feature': display_feats,
+                    'Ideal Value': [round(arts['ideal'].get(f, 0), 4) for f in display_feats]
                 })
                 st.dataframe(ideal_table, use_container_width=True, hide_index=True)
 
@@ -385,7 +386,7 @@ elif page == "🔮 Single Prediction":
 
     # Load ideal profile as default values
     ideal = arts.get('ideal', {})
-    month_default = float(meta.get('month_mean', 6.5)) if 'month' in feat_names else None
+    month_default = 5.967 if 'month' in feat_names else None
 
     st.markdown('<div class="section-header">⚙️ Process Parameters</div>', unsafe_allow_html=True)
 
@@ -511,7 +512,7 @@ elif page == "📦 Batch Prediction":
 
     # ── Download template ──────────────────────────────────────────────────────
     feat_names = arts['features']
-    month_default = float(meta.get('month_mean', 6.5)) if 'month' in feat_names else None
+    month_default = 5.967 if 'month' in feat_names else None
     template_df = pd.DataFrame(columns=feat_names)
     if 'ideal' in arts:
         row = {f: arts['ideal'].get(f, 0.0) for f in feat_names}
