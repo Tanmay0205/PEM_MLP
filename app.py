@@ -381,9 +381,11 @@ elif page == "🔮 Single Prediction":
     # Use top features for the UI (most important ones)
     top_feats = arts.get('top_feats', feat_names[:20])
     ui_feats  = top_feats[:20] if len(top_feats) >= 20 else feat_names[:20]
+    ui_feats  = [f for f in ui_feats if f != 'month']
 
     # Load ideal profile as default values
     ideal = arts.get('ideal', {})
+    month_default = float(meta.get('month_mean', 6.5)) if 'month' in feat_names else None
 
     st.markdown('<div class="section-header">⚙️ Process Parameters</div>', unsafe_allow_html=True)
 
@@ -412,7 +414,9 @@ elif page == "🔮 Single Prediction":
     if predict_btn:
         input_df = pd.DataFrame([input_vals])
         for col in feat_names:
-            if col not in input_df.columns:
+            if col == 'month':
+                input_df[col] = month_default
+            elif col not in input_df.columns:
                 input_df[col] = float(ideal.get(col, 0.0))
 
         pred = predict(input_df)[0]
@@ -507,9 +511,12 @@ elif page == "📦 Batch Prediction":
 
     # ── Download template ──────────────────────────────────────────────────────
     feat_names = arts['features']
+    month_default = float(meta.get('month_mean', 6.5)) if 'month' in feat_names else None
     template_df = pd.DataFrame(columns=feat_names)
     if 'ideal' in arts:
         row = {f: arts['ideal'].get(f, 0.0) for f in feat_names}
+        if month_default is not None:
+            row['month'] = month_default
         template_df = pd.DataFrame([row])
 
     csv_buf = io.StringIO()
@@ -532,6 +539,10 @@ elif page == "📦 Batch Prediction":
         for drop_col in ['date', 'final.output.recovery']:
             if drop_col in df_batch.columns:
                 df_batch.drop(columns=[drop_col], inplace=True)
+
+        # Always use the average month value if the model expects it
+        if 'month' in feat_names:
+            df_batch['month'] = month_default
 
         # Align & predict
         preds = predict(df_batch.copy())
